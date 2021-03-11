@@ -61,3 +61,6 @@ def precipitation():
     for date, prcp in lastYearPrecip:
        prcpDict[date] = prcp
     return prcpDict 
+
+if __name__ == '__main__':
+    app.run(debug=True)
