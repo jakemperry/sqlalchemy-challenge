@@ -31,8 +31,8 @@ def homepage():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/&lt;start&gt;<br/>"
+        f"/api/v1.0/&lt;start&gt;/&lt;end&gt;"
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -94,5 +94,33 @@ def tobs():
     session.close()
     return jsonify(busyTOBS)
 
+@app.route("/api/v1.0/<start>")
+def dateSpan(start):
+    startDate = start
+    session = Session(engine)
+    tmin = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    tmax = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    tavg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    session.close()
+
+    resultDict = {"TMIN":tmin,
+                    "TMAX":tmax,
+                    "TAVG":tavg}
+    return jsonify(resultDict)
+
+
+@app.route("/api/v1.0/<start>")
+def dateSpan(start):
+    startDate = start
+    session = Session(engine)
+    tmin = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    tmax = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    tavg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    session.close()
+
+    resultDict = {"TMIN":tmin,
+                    "TMAX":tmax,
+                    "TAVG":tavg}
+    return jsonify(resultDict)
 if __name__ == '__main__':
     app.run(debug=True)
