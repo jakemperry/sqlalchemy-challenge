@@ -68,9 +68,31 @@ def stations():
 
     activeStations = session.query(Measurement.station, func.count(Measurement.date))\
     .group_by(Measurement.station).order_by(func.count(Measurement.date).desc()).all()
+
     session.close()
-    
+
     return jsonify(activeStations)
+
+@app.route("/api/v1.0/tobs")
+def tobs():
+    session = Session(engine)
+    mostRecentDate = session.query(Measurement.date) \
+    .order_by(Measurement.date.desc()).first()
+
+    # Starting from the most recent data point in the database. 
+    mostRecentSplit = mostRecentDate[0].split("-")
+    recentDate = dt.date(int(mostRecentSplit[0]),int(mostRecentSplit[1]),int(mostRecentSplit[2]))
+    
+    # Calculate the date one year from the last date in data set.
+    yearAgo = recentDate - dt.timedelta(days=365)
+    busyStation = session.query(Measurement.station, func.count(Measurement.date))\
+    .filter(Measurement.date >= yearAgo).group_by(Measurement.station).order_by(func.count(Measurement.date).desc()).first()
+
+    busyTOBS = session.query(Measurement.station, Measurement.date, Measurement.tobs)\
+        .filter(Measurement.station == busyStation[0]).filter(Measurement.date >= yearAgo).all()
+
+    session.close()
+    return jsonify(busyTOBS)
 
 if __name__ == '__main__':
     app.run(debug=True)
