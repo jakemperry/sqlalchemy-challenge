@@ -19,3 +19,5 @@ The Flask app has the following routes:
 - pandas
 - datetime
 - flask
+- numpy
+- matplotlib
