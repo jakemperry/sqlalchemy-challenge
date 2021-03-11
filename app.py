@@ -51,7 +51,8 @@ def precipitation():
     
     # Perform a query to retrieve the data and precipitation scores
     lastYearPrecip = session.query(Measurement.date, func.sum(Measurement.prcp))\
-        .filter(Measurement.date >= yearAgo).group_by(Measurement.date).all()
+        .filter(Measurement.date >= yearAgo)\
+        .group_by(Measurement.date).all()
 
     #Close session!
     session.close()
@@ -67,7 +68,9 @@ def stations():
     session = Session(engine)
 
     activeStations = session.query(Measurement.station, func.count(Measurement.date))\
-    .group_by(Measurement.station).order_by(func.count(Measurement.date).desc()).all()
+    .group_by(Measurement.station)\
+    .order_by(func.count(Measurement.date)\
+    .desc()).all()
 
     session.close()
 
@@ -86,10 +89,14 @@ def tobs():
     # Calculate the date one year from the last date in data set.
     yearAgo = recentDate - dt.timedelta(days=365)
     busyStation = session.query(Measurement.station, func.count(Measurement.date))\
-    .filter(Measurement.date >= yearAgo).group_by(Measurement.station).order_by(func.count(Measurement.date).desc()).first()
+        .filter(Measurement.date >= yearAgo)\
+        .group_by(Measurement.station)\
+        .order_by(func.count(Measurement.date)\
+        .desc()).first()
 
     busyTOBS = session.query(Measurement.station, Measurement.date, Measurement.tobs)\
-        .filter(Measurement.station == busyStation[0]).filter(Measurement.date >= yearAgo).all()
+        .filter(Measurement.station == busyStation[0])\
+        .filter(Measurement.date >= yearAgo).all()
 
     session.close()
     return jsonify(busyTOBS)
@@ -98,9 +105,15 @@ def tobs():
 def dateSpan(start):
     startDate = start
     session = Session(engine)
-    tmin = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= startDate).first()
-    tmax = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= startDate).first()
-    tavg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+
+    tmin = session.query(func.min(Measurement.tobs))\
+        .filter(Measurement.date >= startDate).first()
+
+    tmax = session.query(func.max(Measurement.tobs))\
+        .filter(Measurement.date >= startDate).first()
+
+    tavg = session.query(func.avg(Measurement.tobs))\
+        .filter(Measurement.date >= startDate).first()
     session.close()
 
     resultDict = {"TMIN":tmin,
@@ -109,18 +122,28 @@ def dateSpan(start):
     return jsonify(resultDict)
 
 
-@app.route("/api/v1.0/<start>")
-def dateSpan(start):
+@app.route("/api/v1.0/<start>/<end>")
+def datesSpan(start, end):
     startDate = start
+    endDate = end
     session = Session(engine)
-    tmin = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= startDate).first()
-    tmax = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= startDate).first()
-    tavg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= startDate).first()
+    tmin = session.query(func.min(Measurement.tobs))\
+        .filter(Measurement.date >= startDate)\
+        .filter(Measurement.date <= endDate).first()
+
+    tmax = session.query(func.max(Measurement.tobs))\
+        .filter(Measurement.date >= startDate)\
+        .filter(Measurement.date <= endDate).first()
+
+    tavg = session.query(func.avg(Measurement.tobs))\
+        .filter(Measurement.date >= startDate)\
+        .filter(Measurement.date <= endDate).first()
     session.close()
 
     resultDict = {"TMIN":tmin,
                     "TMAX":tmax,
                     "TAVG":tavg}
     return jsonify(resultDict)
+
 if __name__ == '__main__':
     app.run(debug=True)
