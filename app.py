@@ -60,7 +60,17 @@ def precipitation():
     prcpDict = {}
     for date, prcp in lastYearPrecip:
        prcpDict[date] = prcp
-    return prcpDict 
+    return jsonify(prcpDict)
+
+@app.route("/api/v1.0/stations")
+def stations():
+    session = Session(engine)
+
+    activeStations = session.query(Measurement.station, func.count(Measurement.date))\
+    .group_by(Measurement.station).order_by(func.count(Measurement.date).desc()).all()
+    session.close()
+    
+    return jsonify(activeStations)
 
 if __name__ == '__main__':
     app.run(debug=True)
