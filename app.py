@@ -31,6 +31,9 @@ def homepage():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
+        f"<br/>"
+        f"Query for min, max, and average temperatures starting with a start date or between a start date and end date. <br/>"
+        f"Dates must be in YYYY-MM-DD format.<br/>"
         f"/api/v1.0/&lt;start&gt;<br/>"
         f"/api/v1.0/&lt;start&gt;/&lt;end&gt;"
     )
