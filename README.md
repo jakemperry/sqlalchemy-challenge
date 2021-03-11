@@ -1,1 +1,13 @@
 # sqlalchemy-challenge
+
+This project contains a jupyter notebook to set up sqlalchemy queries with a sqlite database of weather data from Hawaii.  These queries are the basis for a Flask app which can be used to generate queries from the sqlite database and display them in your browser.
+
+The Flask app has the following routes:
+
+|Route|Description|
+|---|---|
+|/api/v1.0/precipitation|Returns a JSON object with dates and the sum of precpitation for the last year of data in the sqlite database.|
+|/api/v1.0/stations|Returns a JSON object with weather station IDs and the count of temperature observations from these stations in the database.|
+|/api/v1.0/tobs|Returns a JSON object with all of the temperature observations from the most active weather station for the last year of data in the database.|
+|/api/v1.0/&lt;start&gt;|
+|/api/v1.0/&lt;start&gt;/&lt;end&gt;|
